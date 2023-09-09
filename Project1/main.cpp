@@ -133,6 +133,7 @@ void decimalConverter(float number, bool* binary, int count)
 //		}
 //	}
 //}
+
 int getBreakPoint(char* left, const int SIZE)
 {
 	int breakPoint = 0;
@@ -149,35 +150,82 @@ int ctin(char letter)
 {
 	return letter - '0';
 }
-void subtractChar(char* left, char* right, const int SIZE)
+void subtractChar(char* left, int right, const int SIZE)
 {
 	int carry = 0;
-	int breakPoint = getBreakPoint(left, SIZE);
-	for (int i = SIZE - 1; i >= breakPoint; i--)
-	{
-		int sum = 0;
-		sum = ctin(left[i]) - right[i] - carry;
+	/*int right = 0;
+	int breakPoint = getBreakPoint(left, SIZE);*/
+	int sum = 0;
+	int temp = right;
+	sum = ctin(left[SIZE - 1]) - right ;
+	for (int i = SIZE - 1; i >= 0; i--)
+	{		
+		sum = sum- carry;
+		
 		if (sum < 0)
 		{
-			sum = abs(sum);
+			sum = ctin(left[i])+10-temp;
 			carry = 1;
+			left[i] = sum + '0';
+			sum = ctin(left[i-1]);
+			temp = carry;
 		}
 		else
 		{
-			sum = ctin(left[i]) - right[i] + carry;
-			carry = 0;
-
 			left[i] = sum + '0';
-			cout << left[i] << endl;
+			break;
 
 		}
 	}
 }
+void division(char* left, int right, const int SIZE)
+{
+	char *tmpArray = new char[SIZE];
+	int carry = 0;
+	int sum = 0;
+	int count = 0;
+	int breakPoint = getBreakPoint(left, SIZE);
+	int temp = ctin(left[breakPoint]);
+	
+	for (int i = breakPoint; i< SIZE; i++)
+	{
+		if(temp & 0x01&&temp>right)
+		{ 
+			sum = (temp - 1) / 2;
+			carry = temp - (sum*right);
+			tmpArray[count] = sum + '0';
+			carry= carry * 10 + ctin(left[i]+1);
+			temp = carry;
+			count++;
+
+		}
+		else if (temp >= right)
+		{
+			sum = temp / 2;
+			carry = temp - (sum * right);
+			tmpArray[count] = sum + '0';
+			carry = carry * 10 + ctin(left[i]);
+			temp = carry;
+			count++;
+		}
+		else {
+			carry = temp * 10 + ctin(left[i+1]);
+			temp = carry;
+		}
+		
+	}
+
+	tmpArray[count] = '\0';
+	rightJustify(tmpArray, SIZE);
+	strcpy_s(left, SIZE*2, tmpArray);
+//	cout << left << endl;
+}
+
 	bool isNegative(char* input)
 	{
 		if (input[0] == '-')
 		{
-			input[0] = 32;
+			input[0] = '0';
 			return true;
 
 		}
@@ -202,6 +250,8 @@ void subtractChar(char* left, char* right, const int SIZE)
 		splitTer(input, SIZE, decimal, whole);
 		cout << whole << endl;
 		cout << decimal << endl;
-		//subtractChar(whole, 5, SIZE);
+	/*	subtractChar(whole, 5, SIZE);
+		cout << whole << endl;*/
+		division(whole, 2, SIZE);
 		//cout << whole << endl;
 	}
