@@ -50,7 +50,30 @@ void splitTer(char* input, const int SIZE, char* decimal, char* whole)
 	rightJustify(whole, SIZE);
 	rightJustify(decimal, SIZE);
 }
-
+//<<<<<<<<< Temporary merge branch 1
+//void binaryConvertor(int number, bool* binary, int count) {
+//	if (number != 0 && number != 1) {
+//		if (number & 0x01) {
+//			binary[count] = true;
+//			number = (number - 1) / 2;
+//		}
+//		else {
+//			binary[count] = false;
+//			number = number / 2;
+//		}
+//		count--;
+//		binaryConvertor(number, binary, count);
+//	}
+//	else if (number == 0) {
+//		binary[count] = false;
+//		return;
+//	}
+//	else if (number == 1) {
+//		binary[count] = true;
+//		return;
+//	}
+//}
+//=========
 void binaryConvertor(int number, bool* binary, int count) {
 	if (number != 0 && number != 1) {
 		if (number & 0x01) {
@@ -93,95 +116,12 @@ void decimalConverter(float number, bool* binary, int count)
 		count++;
 		decimalConverter(number, binary, count);
 	}
-}
-
-int getBreakPoint(char* left, const int SIZE)
-{
-	int breakPoint = 0;
-	while (left[breakPoint] == '0' && breakPoint < SIZE) {
-		breakPoint++;
-	}
-	if (breakPoint == SIZE) {
-		return SIZE - 1;
-	}
-	else
-		return breakPoint;
-}
-
-int ctin(char letter)
-{
-	return letter - '0';
-}
-
-void subtractChar(char* left, char* right, const int SIZE)
-{
-	int carry = 0;
-	int breakPoint = getBreakPoint(left, SIZE);
-	for (int i = SIZE - 1; i >= breakPoint; i--)
-	{
-		int sum = 0;
-		sum = ctin(left[i]) - right[i] - carry;
-		if (sum < 0)
-		{
-			sum = abs(sum);
-			carry = 1;
-		}
-		else
-		{
-			sum = ctin(left[i]) - right[i] + carry;
-			carry = 0;
-
-			left[i] = sum + '0';
-			cout << left[i] << endl;
-
-		}
-	}
-}
-	
-bool isNegative(char* input)
-{
-	if (input[0] == '-')
-	{
-		input[0] = 32;
-		return true;
-
-	}
 	else
 	{
-		return false;
+		//binary[count] = '\0';
+		return;
 	}
 }
-
-string decimalToBinary(double fractionalPart, int precision) {
-	string binary = "0.";
-
-	for (int i = 0; i < precision; ++i) {
-		fractionalPart *= 2;
-		int bit = static_cast<int>(fractionalPart);
-		binary += to_string(bit);
-		fractionalPart -= bit;
-	}
-	return binary;
-}
-
-int main()
-{
-	const int SIZE = 52;
-	char* input = new char[SIZE];
-	char* decimal = new char[SIZE];
-	char* whole = new char[SIZE];
-	
-	cout << "Enter the floating point number: ";
-	cin.getline(input, SIZE);
-
-	bool negative = isNegative(input);
-
-	splitTer(input, SIZE, decimal, whole);
-	cout << "Whole Number: " << whole << endl;
-	cout << "Decimal Number: " << decimal << endl;
-
-}
-
 //while(char left!= 0)
 //char* array =2^-1;
 //if(char* left >2^-1)
@@ -193,6 +133,7 @@ int main()
 // 
 // 
 // 
+//>>>>>>>>> Temporary merge branch 2
 //char* cstringAdd(char* balance, char* deposit)
 //{
 //	int carry = 0;
@@ -216,3 +157,137 @@ int main()
 //		}
 //	}
 //}
+int getBreakPoint(char* left, const int SIZE)
+{
+	int breakPoint = 0;
+	while (left[breakPoint] == '0' && breakPoint < SIZE) {
+		breakPoint++;
+	}
+	if (breakPoint == SIZE) {
+		return SIZE - 1;
+	}
+	else
+		return breakPoint;
+}
+
+int ctin(char letter)
+{
+	return letter - '0';
+}
+void subtractChar(char* left, int right, const int SIZE)
+{
+	int carry = 0;
+	//int right = 0;
+	int breakPoint = getBreakPoint(left, SIZE);
+	int sum = 0;
+	int temp = right;
+	sum = ctin(left[SIZE - 1]) - right;
+	for (int i = SIZE - 1; i >= 0; i--)
+	{
+		sum = sum - carry;
+
+		if (sum < 0)
+		{
+			sum = ctin(left[i]) + 10 - temp;
+			carry = 1;
+			left[i] = sum + '0';
+			sum = ctin(left[i - 1]);
+			temp = carry;
+		}
+		else
+		{
+			left[i] = sum + '0';
+			break;
+
+		}
+	}
+}
+
+void division(char* left, int right, const int SIZE)
+{
+	char *tmpArray = new char[SIZE];
+	int carry = 0;
+	int sum = 0;
+	int count = 0;
+	int breakPoint = getBreakPoint(left, SIZE);
+	int temp = ctin(left[breakPoint]);
+	
+	for (int i = breakPoint; i< SIZE; i++)
+	{
+		if(temp & 0x01&&temp>right)
+		{ 
+			sum = (temp - 1) / 2;
+			carry = temp - (sum*right);
+			tmpArray[count] = sum + '0';
+			carry= carry * 10 + ctin(left[i]+1);
+			temp = carry;
+			count++;
+
+		}
+		else if (temp >= right)
+		{
+			sum = temp / 2;
+			carry = temp - (sum * right);
+			tmpArray[count] = sum + '0';
+			carry = carry * 10 + ctin(left[i]);
+			temp = carry;
+			count++;
+		}
+		else {
+			carry = temp * 10 + ctin(left[i+1]);
+			temp = carry;
+		}
+		
+	}
+
+	tmpArray[count] = '\0';
+	rightJustify(tmpArray, SIZE);
+	strcpy_s(left, SIZE*2, tmpArray);
+//	cout << left << endl;
+}
+
+bool isNegative(char* input)
+{
+	if (input[0] == '-')
+	{
+		input[0] = '0';
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+string decimalToBinary(double fractionalPart, int precision) {
+	string binary = "0.";
+
+	for (int i = 0; i < precision; ++i) {
+		fractionalPart *= 2;
+		int decimal = static_cast<int>(fractionalPart);
+		binary += to_string(decimal);
+		fractionalPart -= decimal;
+	}
+	return binary;
+}
+
+int main()
+{
+	const int SIZE = 52;
+	char* input = new char[SIZE];
+	char* decimal = new char[SIZE];
+	char* whole = new char[SIZE];
+	
+	cout << "Enter the floating point number: ";
+	cin.getline(input, SIZE);
+
+	bool negative = isNegative(input);
+
+	splitTer(input, SIZE, decimal, whole);
+	cout << whole << endl;
+	cout << decimal << endl;
+	/*subtractChar(whole, 5, SIZE);
+	cout << whole << endl;*/
+	division(whole, 2, SIZE);
+	//cout << whole << endl;
+}
