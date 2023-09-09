@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-
+#include <bitset>
 using namespace std;
 
 
@@ -49,9 +49,8 @@ void splitTer(char* input, const int SIZE, char* decimal, char* whole)
 
 	rightJustify(whole, SIZE);
 	rightJustify(decimal, SIZE);
-
-
 }
+
 void binaryConvertor(int number, bool* binary, int count) {
 	if (number != 0 && number != 1) {
 		if (number & 0x01) {
@@ -74,6 +73,7 @@ void binaryConvertor(int number, bool* binary, int count) {
 		return;
 	}
 }
+
 void decimalConverter(float number, bool* binary, int count)
 {
 	if (number != 0 && count < 20)
@@ -93,12 +93,95 @@ void decimalConverter(float number, bool* binary, int count)
 		count++;
 		decimalConverter(number, binary, count);
 	}
+}
+
+int getBreakPoint(char* left, const int SIZE)
+{
+	int breakPoint = 0;
+	while (left[breakPoint] == '0' && breakPoint < SIZE) {
+		breakPoint++;
+	}
+	if (breakPoint == SIZE) {
+		return SIZE - 1;
+	}
 	else
+		return breakPoint;
+}
+
+int ctin(char letter)
+{
+	return letter - '0';
+}
+
+void subtractChar(char* left, char* right, const int SIZE)
+{
+	int carry = 0;
+	int breakPoint = getBreakPoint(left, SIZE);
+	for (int i = SIZE - 1; i >= breakPoint; i--)
 	{
-		//binary[count] = '\0';
-		return;
+		int sum = 0;
+		sum = ctin(left[i]) - right[i] - carry;
+		if (sum < 0)
+		{
+			sum = abs(sum);
+			carry = 1;
+		}
+		else
+		{
+			sum = ctin(left[i]) - right[i] + carry;
+			carry = 0;
+
+			left[i] = sum + '0';
+			cout << left[i] << endl;
+
+		}
 	}
 }
+	
+bool isNegative(char* input)
+{
+	if (input[0] == '-')
+	{
+		input[0] = 32;
+		return true;
+
+	}
+	else
+	{
+		return false;
+	}
+}
+
+string decimalToBinary(double fractionalPart, int precision) {
+	string binary = "0.";
+
+	for (int i = 0; i < precision; ++i) {
+		fractionalPart *= 2;
+		int bit = static_cast<int>(fractionalPart);
+		binary += to_string(bit);
+		fractionalPart -= bit;
+	}
+	return binary;
+}
+
+int main()
+{
+	const int SIZE = 52;
+	char* input = new char[SIZE];
+	char* decimal = new char[SIZE];
+	char* whole = new char[SIZE];
+	
+	cout << "Enter the floating point number: ";
+	cin.getline(input, SIZE);
+
+	bool negative = isNegative(input);
+
+	splitTer(input, SIZE, decimal, whole);
+	cout << "Whole Number: " << whole << endl;
+	cout << "Decimal Number: " << decimal << endl;
+
+}
+
 //while(char left!= 0)
 //char* array =2^-1;
 //if(char* left >2^-1)
@@ -133,75 +216,3 @@ void decimalConverter(float number, bool* binary, int count)
 //		}
 //	}
 //}
-int getBreakPoint(char* left, const int SIZE)
-{
-	int breakPoint = 0;
-	while (left[breakPoint] == '0' && breakPoint < SIZE) {
-		breakPoint++;
-	}
-	if (breakPoint == SIZE) {
-		return SIZE - 1;
-	}
-	else
-		return breakPoint;
-}
-int ctin(char letter)
-{
-	return letter - '0';
-}
-void subtractChar(char* left, char* right, const int SIZE)
-{
-	int carry = 0;
-	int breakPoint = getBreakPoint(left, SIZE);
-	for (int i = SIZE - 1; i >= breakPoint; i--)
-	{
-		int sum = 0;
-		sum = ctin(left[i]) - right[i] - carry;
-		if (sum < 0)
-		{
-			sum = abs(sum);
-			carry = 1;
-		}
-		else
-		{
-			sum = ctin(left[i]) - right[i] + carry;
-			carry = 0;
-
-			left[i] = sum + '0';
-			cout << left[i] << endl;
-
-		}
-	}
-}
-	bool isNegative(char* input)
-	{
-		if (input[0] == '-')
-		{
-			input[0] = 32;
-			return true;
-
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	int main()
-	{
-		const int SIZE = 52;
-		char* input = new char[SIZE];
-		char* decimal = new char[SIZE];
-		char* whole = new char[SIZE];
-
-		cout << "Enter the folating point number: ";
-		cin.getline(input, SIZE);
-
-		bool negative = isNegative(input);
-
-		splitTer(input, SIZE, decimal, whole);
-		cout << whole << endl;
-		cout << decimal << endl;
-		//subtractChar(whole, 5, SIZE);
-		//cout << whole << endl;
-	}
